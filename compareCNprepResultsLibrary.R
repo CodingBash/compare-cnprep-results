@@ -30,21 +30,27 @@ retrieveSegtable <- function(sample, dir = "segClusteringResults/"){
 # Method to display and compare CNprep results
 #
 # @param("organoidId") - string of the organoid sample
-# @param("bin_start") - start of the x-axis (in bin units)
-# @param("bin_end") - end of the x-axis (in bin units)
+# @param("select_chrom") - chromosome to view segments within (overrides @param(start) and @param(end))
+# @param("start") - start of the x-axis (in unit defined by @param(bin_coord))
+# @param("end") - end of the x-axis (in unit defined by @param(bin_coord))
 # @param("model_specs") - list of CNprep runs to compare
 # @param("cluster_value") - value of the segtable column with the cluster values
+# @param("clustered_supplementary_value") - segtable column to display with segments color coded based on cluster assignment
+# @param("overlay_cluster_means") - if @param("clustered_supplementary_value") is supplied, @param("cluster_value") will not be displayed unless @param("overlay_cluster_means") is TRUE
 # @param("supplementary_values") - values of the segtable columns with any supplementary data to overlay
 # @param("cluster_cols") - color palette for each cluster
 # @param("supplementary_cols") - color palette for each supplementary data
-# @param("hl") - boolean declaring if plot horizontal lines should appear
-#
-displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, hl = TRUE, bin_coord = TRUE){
+# @param("grid_lines") - boolean declaring if plot horizontal lines should appear
+# @param("chrom_lines") - boolean declaring if plot vertical lines for chromosome boundaries should appear
+# @param("bin_coord") - boolean determine unit (TRUE if bin, FALSE if abs bp)
+displayCNprepResults <- function(organoidId, select_chrom, start, end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, grid_lines = FALSE, chrom_lines = TRUE, bin_coord = TRUE){
   #
   # Set coordinate unit
   #
   start_col <- if(bin_coord == TRUE) "start" else "abs.pos.start"
   end_col <- if(bin_coord == TRUE) "end" else "abs.pos.end"
+  
+
   
   #
   # Set plot parameters
@@ -52,21 +58,34 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_en
   layout(matrix(seq(1, nrow(model_specs) * 2), nrow(model_specs), 2, byrow = TRUE), 
          widths=c(4,1))
   par(mar=c(2,2,1.25,0))
+  
   #
   # Retrieve list of all CNprep segtables (accounting for bin range)
   #
-  all_segtables <- lapply(seq(1, nrow(model_specs)), function(model_specs.index, bin_start, bin_end){
-    
+  all_segtables <- lapply(seq(1, nrow(model_specs)), function(model_specs.index, select_chrom, start, end){
     segtable <- retrieveSegtable(organoidId, dir = paste0("segClusteringResults/", model_specs[model_specs.index, ]$dir, "/"))
-    if(!missing(bin_start) & !missing(bin_end)){
-      segtable <- segtable[segtable$start >= bin_start & segtable$end <= bin_end,]  
-    } else if (!missing(bin_start)){
-      segtable <- segtable[segtable$start >= bin_start,]  
-    } else if (!missing(bin_end)) {
-      segtable <- segtable[segtable$end <= bin_end,]  
+    #
+    # If selected chrom is provided, determine the start and end range
+    #
+    if(!missing(select_chrom)){
+      chrom_start_coordinates <- segtable[segtable$chrom == as.character(select_chrom), ][[start_col]]
+      chrom_end_coordinates <- segtable[segtable$chrom == as.character(select_chrom), ][[end_col]]
+      start <- min(chrom_start_coordinates)
+      end <- max(chrom_end_coordinates)
+    }
+    
+    #
+    # Select segtables observations based on provided start/end range
+    #
+    if(!missing(start) & !missing(end)){
+      segtable <- segtable[segtable[[start_col]] >= start & segtable[[end_col]] <= end,]  
+    } else if (!missing(start)){
+      segtable <- segtable[segtable[[start_col]] >= start,]  
+    } else if (!missing(end)) {
+      segtable <- segtable[segtable[[end_col]] <= end,]  
     }
     return(segtable)
-  }, bin_start, bin_end)
+  }, select_chrom, start, end)
   
   #
   # Generate dataframe with all CNprep segtables
@@ -147,7 +166,7 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_en
     #
     # Display horizontal lines
     #
-    if(hl == TRUE){
+    if(grid_lines == TRUE){
       abline(h=0)
       abline(h=0.5, col = "#4F4F4F")
       abline(h=-0.5, col = "#4F4F4F")
@@ -155,11 +174,23 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_en
       abline(h=-1, col = "#BABABA")
     }
     
+    if(chrom_lines == TRUE){
+      for(chrom in c(as.character(seq(2, 22)), "X")){
+        chrom_coordinates <- segtable[segtable$chrom == as.character(chrom), ][[start_col]]
+        chrom_start <- min(chrom_coordinates)
+        abline(v = chrom_start)
+      }
+    }
+    
     #
     # Set legend
     #
+    windows.options(width=10, height=10)
     plot.new()
+    print(legend_values)
+    print(legend_col)
+    print("")
     legend("left", legend=legend_values,
-           col = legend_col, seg.len = 0.5, lty=1, cex=1, pt.cex = 1, xpd = TRUE, y.intersp=1, x.intersp=.1)
+           col = legend_col, seg.len = 0.5, lty=1, cex=0.65, pt.cex = 1, xpd = TRUE, y.intersp=1, x.intersp=.1)
   }
 }

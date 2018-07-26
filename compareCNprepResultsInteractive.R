@@ -16,20 +16,26 @@ supplementary_cols <- brewer.pal(n = 7, name="Set2") # Set colors for suppl. Let
 #
 print(all_model_specs)
 
-# Toy example
-displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", clustered_supplementary_value = "segmedian", supplementary_values = c("mediandev"), overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, hl = FALSE) # Display
-dev.off()
+#
+# Select the CNprep specs to compare with
+#
+selected_model_specs <- c(1,12)
 
+# Example 1: Display CNprep results for organoid "hT1" for CNprep runs #1,12.
+# See what cluster each segmedian is assigned to - view the cluster mean as well
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ], cluster_value = "maxzmean", clustered_supplementary_value = "mediandev", overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE)
 
-# Example 1: Display CNprep results for organoid "hT1" for CNprep runs #1,12. 
-displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", cluster_cols = cluster_cols) # Display
+# Display in specific range (make sure range is consistent with x units selected)
+displayCNprepResults(organoidId= "hT1", start = 1000000000, end = 2500000000, model_specs = all_model_specs[selected_model_specs, ], cluster_value = "maxzmean", clustered_supplementary_value = "mediandev", overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE)
 
-# Example 2: Extended off of example 1 by also viewing the mediandev of segments too
-displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", supplementary_values = c("mediandev"), cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols)
+# Display in specific chromosome
+displayCNprepResults(organoidId= "hT1",select_chrom = 8, model_specs = all_model_specs[selected_model_specs, ], cluster_value = "maxzmean", clustered_supplementary_value = "mediandev", overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE)
 
-# Example 3: Extended off of example 2 by also viewing all segments between bins 20000 and 40000
-displayCNprepResults(organoidId= "hT1", bin_start = 20000, bin_end = 40000, model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", supplementary_values = c("mediandev"), cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols)
+# Display original with no layout lines
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ], cluster_value = "maxzmean", clustered_supplementary_value = "mediandev", overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, bin_coord = FALSE)
 
-# Example 4: Extended off of example 4 by removing horizontal grid lines
-displayCNprepResults(organoidId= "hT1", bin_start = 20000, bin_end = 40000, model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", supplementary_values = c("mediandev"), cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, hl = FALSE)
+# Display in bin units
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ], cluster_value = "maxzmean", clustered_supplementary_value = "mediandev", overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, bin_coord = TRUE)
 
+# Display within bin range
+displayCNprepResults(organoidId= "hT1", start = 20000, end = 60000, model_specs = all_model_specs[selected_model_specs, ], cluster_value = "maxzmean", clustered_supplementary_value = "mediandev", overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, bin_coord = TRUE)
