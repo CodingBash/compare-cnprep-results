@@ -187,9 +187,6 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
     #
     windows.options(width=10, height=10)
     plot.new()
-    print(legend_values)
-    print(legend_col)
-    print("")
     legend("left", legend=legend_values,
            col = legend_col, seg.len = 0.5, lty=1, cex=0.65, pt.cex = 1, xpd = TRUE, y.intersp=1, x.intersp=.1)
   }
