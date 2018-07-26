@@ -39,14 +39,19 @@ retrieveSegtable <- function(sample, dir = "segClusteringResults/"){
 # @param("supplementary_cols") - color palette for each supplementary data
 # @param("hl") - boolean declaring if plot horizontal lines should appear
 #
-displayCNprepResults <- function(organoidId, bin_start, bin_end, model_specs, cluster_value = "maxzmean", supplementary_values, cluster_cols, supplementary_cols, hl = TRUE){
+displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_end, model_specs, cluster_value = "maxzmean", supplementary_values, cluster_cols, supplementary_cols, hl = TRUE, bin_coord = TRUE){
+  #
+  # Set coordinate unit
+  #
+  start_col <- if(bin_coord == TRUE) "start" else "abs.pos.start"
+  end_col <- if(bin_coord == TRUE) "end" else "abs.pos.end"
+  
   #
   # Set plot parameters
   #
   layout(matrix(seq(1, nrow(model_specs) * 2), nrow(model_specs), 2, byrow = TRUE), 
          widths=c(4,1))
   par(mar=c(2,2,1.25,0))
-  
   #
   # Retrieve list of all CNprep segtables (accounting for bin range)
   #
@@ -67,7 +72,7 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, model_specs, cl
   # Generate dataframe with all CNprep segtables
   #
   binded_segtables <- do.call(rbind, all_segtables)
-
+  
   #
   # Determine plot ranges
   #
@@ -81,9 +86,9 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, model_specs, cl
   ymargin <- 0.1
   yplot <- 0.5
   yvalues <- sapply(values, function(value){binded_segtables[[value]]})
-  xrange <- range(binded_segtables$start,binded_segtables$end)
+  xrange <- range(binded_segtables[[start_col]],binded_segtables[[end_col]])
   yrange <- range(yvalues - ymargin, yvalues + ymargin + 0.5)
-    
+  
   #
   # Iterate through each CNprep segtable
   #
@@ -108,8 +113,8 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, model_specs, cl
     #
     if(!missing(supplementary_values)){
       for(supplementary_value.index in seq_along(supplementary_values)){
-        segments(x0 = segtable$start, x1 = segtable$end, y0 = segtable[[supplementary_values[[supplementary_value.index]]]], y1 = segtable[[supplementary_values[[supplementary_value.index]]]],
-                 col = supplementary_cols[[supplementary_value.index]], lty = par("lty"), lwd = par("lwd"))
+        segments(x0 = segtable[[start_col]], x1 = segtable[[end_col]], y0 = segtable[[supplementary_values[[supplementary_value.index]]]], y1 = segtable[[supplementary_values[[supplementary_value.index]]]],
+                 col = supplementary_cols[[supplementary_value.index]], lty = par("lty"), lwd = 3)
       }
       
       legend_values <- c(legend_values, supplementary_values)
@@ -120,13 +125,13 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, model_specs, cl
     # Display clusters
     #
     if(!missing(cluster_value)){
-        clusters <- split(segtable, f=segtable[[cluster_value]])
-        for(cluster.index in seq_along(clusters)){
-          segments(x0 = clusters[[cluster.index]]$start, x1 = clusters[[cluster.index]]$end, y0 = clusters[[cluster.index]][[cluster_value]], y1 = clusters[[cluster.index]][[cluster_value]],
-                   col = cluster_cols[[cluster.index]], lty = par("lty"), lwd = par("lwd"))
-        }
-        legend_values <- c(legend_values, paste0(cluster_value,"#", unlist(lapply(names(clusters), function(cluster){ return(substr(cluster, 1, 5))}))))
-        legend_col <- c(legend_col, head(cluster_cols, length(names(clusters))))
+      clusters <- split(segtable, f=segtable[[cluster_value]])
+      for(cluster.index in seq_along(clusters)){
+        segments(x0 = clusters[[cluster.index]][[start_col]], x1 = clusters[[cluster.index]][[end_col]], y0 = clusters[[cluster.index]][[cluster_value]], y1 = clusters[[cluster.index]][[cluster_value]],
+                 col = cluster_cols[[cluster.index]], lty = par("lty"), lwd = 3)
+      }
+      legend_values <- c(legend_values, paste0(cluster_value,"#", unlist(lapply(names(clusters), function(cluster){ return(substr(cluster, 1, 5))}))))
+      legend_col <- c(legend_col, head(cluster_cols, length(names(clusters))))
     }
     
     #

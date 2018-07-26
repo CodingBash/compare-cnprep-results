@@ -16,6 +16,11 @@ supplementary_cols <- brewer.pal(n = 7, name="Set2") # Set colors for suppl. Let
 #
 print(all_model_specs)
 
+# Toy example
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", cluster_cols = cluster_cols, hl = TRUE) # Display
+dev.off()
+
+
 # Example 1: Display CNprep results for organoid "hT1" for CNprep runs #1,12. 
 displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", cluster_cols = cluster_cols) # Display
 
