@@ -17,7 +17,7 @@ supplementary_cols <- brewer.pal(n = 7, name="Set2") # Set colors for suppl. Let
 print(all_model_specs)
 
 # Toy example
-displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", cluster_cols = cluster_cols, hl = TRUE) # Display
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", clustered_supplementary_value = "segmedian", supplementary_values = c("mediandev"), overlay_cluster_means = TRUE, cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, hl = FALSE) # Display
 dev.off()
 
 
@@ -32,3 +32,4 @@ displayCNprepResults(organoidId= "hT1", bin_start = 20000, bin_end = 40000, mode
 
 # Example 4: Extended off of example 4 by removing horizontal grid lines
 displayCNprepResults(organoidId= "hT1", bin_start = 20000, bin_end = 40000, model_specs = all_model_specs[c(1,12), ], cluster_value = "maxzmean", supplementary_values = c("mediandev"), cluster_cols = cluster_cols, supplementary_cols =  supplementary_cols, hl = FALSE)
+

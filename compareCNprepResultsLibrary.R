@@ -39,7 +39,7 @@ retrieveSegtable <- function(sample, dir = "segClusteringResults/"){
 # @param("supplementary_cols") - color palette for each supplementary data
 # @param("hl") - boolean declaring if plot horizontal lines should appear
 #
-displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_end, model_specs, cluster_value = "maxzmean", supplementary_values, cluster_cols, supplementary_cols, hl = TRUE, bin_coord = TRUE){
+displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, hl = TRUE, bin_coord = TRUE){
   #
   # Set coordinate unit
   #
@@ -124,10 +124,20 @@ displayCNprepResults <- function(organoidId, bin_start, bin_end, bp_start, bp_en
     #
     # Display clusters
     #
-    if(!missing(cluster_value)){
+    if(!missing(cluster_value) & (missing(clustered_supplementary_value) | overlay_cluster_means == TRUE)){
       clusters <- split(segtable, f=segtable[[cluster_value]])
       for(cluster.index in seq_along(clusters)){
         segments(x0 = clusters[[cluster.index]][[start_col]], x1 = clusters[[cluster.index]][[end_col]], y0 = clusters[[cluster.index]][[cluster_value]], y1 = clusters[[cluster.index]][[cluster_value]],
+                 col = cluster_cols[[cluster.index]], lty = if(overlay_cluster_means == FALSE) par("lty") else "dotted" , lwd = if(overlay_cluster_means == FALSE) 3 else 2)
+      }
+      legend_values <- c(legend_values, paste0(cluster_value,"#", unlist(lapply(names(clusters), function(cluster){ return(substr(cluster, 1, 5))}))))
+      legend_col <- c(legend_col, head(cluster_cols, length(names(clusters))))
+    }
+    
+    if(!missing(clustered_supplementary_value)){
+      clusters <- split(segtable, f=segtable[[cluster_value]])
+      for(cluster.index in seq_along(clusters)){
+        segments(x0 = clusters[[cluster.index]][[start_col]], x1 = clusters[[cluster.index]][[end_col]], y0 = clusters[[cluster.index]][[clustered_supplementary_value]], y1 = clusters[[cluster.index]][[clustered_supplementary_value]],
                  col = cluster_cols[[cluster.index]], lty = par("lty"), lwd = 3)
       }
       legend_values <- c(legend_values, paste0(cluster_value,"#", unlist(lapply(names(clusters), function(cluster){ return(substr(cluster, 1, 5))}))))
