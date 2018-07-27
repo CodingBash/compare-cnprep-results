@@ -43,14 +43,15 @@ retrieveSegtable <- function(sample, dir = "segClusteringResults/"){
 # @param("grid_lines") - boolean declaring if plot horizontal lines should appear
 # @param("chrom_lines") - boolean declaring if plot vertical lines for chromosome boundaries should appear
 # @param("bin_coord") - boolean determine unit (TRUE if bin, FALSE if abs bp)
-displayCNprepResults <- function(organoidId, select_chrom, start, end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, grid_lines = FALSE, chrom_lines = TRUE, bin_coord = TRUE){
+# TODO: Have description of target arguments
+displayCNprepResults <- function(organoidId, select_chrom, start, end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, grid_lines = FALSE, chrom_lines = TRUE, bin_coord = TRUE, target_segments_function, target_segments_value, target_segments_col){
   #
   # Set coordinate unit
   #
   start_col <- if(bin_coord == TRUE) "start" else "abs.pos.start"
   end_col <- if(bin_coord == TRUE) "end" else "abs.pos.end"
   
-
+  
   
   #
   # Set plot parameters
@@ -91,22 +92,37 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
   # Generate dataframe with all CNprep segtables
   #
   binded_segtables <- do.call(rbind, all_segtables)
+  print(binded_segtables[binded_segtables$segmedian > 2, ])
   
   #
   # Determine plot ranges
   #
   values <- list()
-  if(!missing(cluster_value)){
+  if(!missing(cluster_value) & (missing(clustered_supplementary_value) | overlay_cluster_means == TRUE)){
     values <- c(values, cluster_value)
+  }
+  if(!missing(clustered_supplementary_value)){
+    values <- c(values, clustered_supplementary_value)
   }
   if(!missing(supplementary_values)){
     values <- c(values, supplementary_values)
   }
+  
   ymargin <- 0.1
   yplot <- 0.5
   yvalues <- sapply(values, function(value){binded_segtables[[value]]})
+  
+  #
+  # Add target/selected segments to yvalue to calculate appropriate yrange
+  #
+  if(!missing(target_segments_function) & !missing(target_segments_value) & !missing(target_segments_col)){
+    segtable_as_list <- split(binded_segtables, seq(nrow(binded_segtables)))
+    selected_segtable <- binded_segtables[sapply(segtable_as_list, target_segments_function),]
+    yvalues <- unlist(c(yvalues, selected_segtable[[target_segments_value]]))
+  }
+  
   xrange <- range(binded_segtables[[start_col]],binded_segtables[[end_col]])
-  yrange <- range(yvalues - ymargin, yvalues + ymargin + 0.5)
+  yrange <- range(yvalues - ymargin, yvalues + ymargin)
   
   #
   # Iterate through each CNprep segtable
@@ -153,6 +169,9 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
       legend_col <- c(legend_col, head(cluster_cols, length(names(clusters))))
     }
     
+    #
+    # Display supplementary value color coded by cluster assignment
+    #
     if(!missing(clustered_supplementary_value)){
       clusters <- split(segtable, f=segtable[[cluster_value]])
       for(cluster.index in seq_along(clusters)){
@@ -161,6 +180,19 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
       }
       legend_values <- c(legend_values, paste0(cluster_value,"#", unlist(lapply(names(clusters), function(cluster){ return(substr(cluster, 1, 5))}))))
       legend_col <- c(legend_col, head(cluster_cols, length(names(clusters))))
+    }
+    
+    #
+    # Display target segments
+    #
+    if(!missing(target_segments_function) & !missing(target_segments_value) & !missing(target_segments_col)){
+      segtable_as_list <- split(segtable, seq(nrow(segtable)))
+      selected_segtable <- segtable[sapply(segtable_as_list, target_segments_function),]
+      
+      segments(x0 = selected_segtable[[start_col]], x1 = selected_segtable[[end_col]], y0 = selected_segtable[[target_segments_value]], y1 = selected_segtable[[target_segments_value]],
+               col = target_segments_col, lty = par("lty"), lwd = 4)
+      legend_values <- c(legend_values, paste0("target-", target_segments_value))
+      legend_col <- c(legend_col, target_segments_col)
     }
     
     #
@@ -174,6 +206,9 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
       abline(h=-1, col = "#BABABA")
     }
     
+    #
+    # Display chromosome boundaries
+    #
     if(chrom_lines == TRUE){
       for(chrom in c(as.character(seq(2, 22)), "X")){
         chrom_coordinates <- segtable[segtable$chrom == as.character(chrom), ][[start_col]]
