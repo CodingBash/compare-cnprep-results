@@ -16,6 +16,8 @@ cnprep_run[[10]] <- data.frame(dir="prev_run_7_15_2018_18", model="V", minjoin=0
 cnprep_run[[11]] <- data.frame(dir="prev_run_7_19_2018_1", model="E", minjoin=0.50, ntrial = 40, stringsAsFactors = FALSE)
 cnprep_run[[12]] <- data.frame(dir="prev_run_7_19_2018_2", model="E", minjoin=1.00, ntrial = 40, stringsAsFactors = FALSE)
 cnprep_run[[13]] <- data.frame(dir="prev_run_7_19_2018_3", model="V", minjoin=1.00, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[14]] <- data.frame(dir="prev_run_7_27_2018_3", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[15]] <- data.frame(dir="prev_run_7_27_2018_4", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
 all_model_specs <- do.call(rbind, cnprep_run)
 
 #
@@ -64,6 +66,7 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
   # Retrieve list of all CNprep segtables (accounting for bin range)
   #
   all_segtables <- lapply(seq(1, nrow(model_specs)), function(model_specs.index, select_chrom, start, end){
+    # TODO: segtable dir should be a parameter
     segtable <- retrieveSegtable(organoidId, dir = paste0("segClusteringResults/", model_specs[model_specs.index, ]$dir, "/"))
     #
     # If selected chrom is provided, determine the start and end range
@@ -92,7 +95,6 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
   # Generate dataframe with all CNprep segtables
   #
   binded_segtables <- do.call(rbind, all_segtables)
-  print(binded_segtables[binded_segtables$segmedian > 2, ])
   
   #
   # Determine plot ranges
@@ -133,7 +135,6 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
     #
     segtable <- all_segtables[[segtable.i]]
     model_spec <- model_specs[segtable.i, ]
-    
     #
     # Set plot information
     #
