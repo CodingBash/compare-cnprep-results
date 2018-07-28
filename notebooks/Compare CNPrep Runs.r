@@ -24,7 +24,7 @@ highlight_facets_events <- function(segment){
   return(result)
 }
 highlight_cnprep_events <- function(segment){
-  result <- segment[["marginalprob"]]  < 0.01 & segment[["maxzmean"]] != 0
+  result <- segment[["marginalprob"]]  < 0.001 & segment[["mediandev"]] != 0
   return(result)
 }
 

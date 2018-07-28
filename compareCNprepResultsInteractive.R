@@ -28,7 +28,7 @@ highlight_facets_events <- function(segment){
   return(result)
 }
 highlight_cnprep_events <- function(segment){
-  result <- segment[["marginalprob"]]  < 0.01 & segment[["maxzmean"]] != 0
+  result <- segment[["marginalprob"]]  < 0.001 & segment[["mediandev"]] != 0
   return(result)
 }
 
@@ -36,9 +36,9 @@ highlight_cnprep_events <- function(segment){
 # Example 1: Use the target_segments_function to highlight aberration events
 #
 # See the events that CNprep calls
-displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ],cluster_cols = cluster_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE,  target_segments_function = highlight_cnprep_events, target_segments_value = "seg.median", target_segments_col = "maroon")
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ],cluster_cols = cluster_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE,  target_segments_function = highlight_cnprep_events, target_segments_value = "seg.median", target_segments_col = "maroon", supplementary_values = c("seg.median"), supplementary_cols = supplementary_cols)
 # See the events that FACETs calls
-displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ],cluster_cols = cluster_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE,  target_segments_function = highlight_facets_events, target_segments_value = "seg.median", target_segments_col = "blue")
+displayCNprepResults(organoidId= "hT1", model_specs = all_model_specs[selected_model_specs, ],cluster_cols = cluster_cols, grid_lines = TRUE, chrom_lines = TRUE, bin_coord = FALSE,  target_segments_function = highlight_facets_events, target_segments_value = "seg.median", target_segments_col = "maroon", supplementary_values = c("seg.median"), supplementary_cols = supplementary_cols)
 
 # Example 2: Display CNprep results for organoid "hT1" for CNprep runs #1,12.
 # See what cluster each segmedian is assigned to - view the cluster mean as well
