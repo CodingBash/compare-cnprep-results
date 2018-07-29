@@ -16,7 +16,7 @@ options(warn=-1)
 
 print(all_model_specs)
 
-selected_model_specs <- c(1,15)
+selected_model_specs <- c(1,16)
 print(all_model_specs[selected_model_specs,])
 
 organoidId <- "hT1"

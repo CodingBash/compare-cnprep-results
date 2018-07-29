@@ -18,6 +18,7 @@ cnprep_run[[12]] <- data.frame(dir="prev_run_7_19_2018_2", model="E", minjoin=1.
 cnprep_run[[13]] <- data.frame(dir="prev_run_7_19_2018_3", model="V", minjoin=1.00, ntrial = 10, stringsAsFactors = FALSE)
 cnprep_run[[14]] <- data.frame(dir="prev_run_7_27_2018_3", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
 cnprep_run[[15]] <- data.frame(dir="prev_run_7_27_2018_4", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[16]] <- data.frame(dir="prev_run_7_27_2018_8", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
 all_model_specs <- do.call(rbind, cnprep_run)
 
 #
