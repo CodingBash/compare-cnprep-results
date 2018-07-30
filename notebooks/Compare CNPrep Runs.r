@@ -77,13 +77,15 @@ highlight_cnprep_events <- function(segment){
 }
 
 target_segments_function = highlight_cnprep_events
-target_segments_value = "seg.median"
+target_segments_value = "mediandev"
 target_segments_col = "maroon"
-supplementary_values = c("seg.median")
+supplementary_values = c("mediandev")
 
 grid_lines <- TRUE
 chrom_lines <- TRUE
 bin_coord <- FALSE
+
+organoidId = "hT101"
 
 displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], target_segments_function = target_segments_function, target_segments_value = target_segments_value, target_segments_col = target_segments_col, supplementary_values = supplementary_values , supplementary_cols = supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
 
