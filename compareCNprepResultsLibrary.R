@@ -19,6 +19,12 @@ cnprep_run[[13]] <- data.frame(dir="prev_run_7_19_2018_3", model="V", minjoin=1.
 cnprep_run[[14]] <- data.frame(dir="prev_run_7_27_2018_3", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
 cnprep_run[[15]] <- data.frame(dir="prev_run_7_27_2018_4", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
 cnprep_run[[16]] <- data.frame(dir="prev_run_7_27_2018_8", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[17]] <- data.frame(dir="cnvkit_prev_run_7_30_2018_1", model="E", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[18]] <- data.frame(dir="cnvkit_prev_run_7_30_2018_2", model="E", minjoin=0.50, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[19]] <- data.frame(dir="cnvkit_prev_run_7_30_2018_3", model="E", minjoin=1.00, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[20]] <- data.frame(dir="cnvkit_prev_run_7_30_2018_4", model="V", minjoin=0.25, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[21]] <- data.frame(dir="cnvkit_prev_run_7_30_2018_5", model="V", minjoin=0.50, ntrial = 10, stringsAsFactors = FALSE)
+cnprep_run[[22]] <- data.frame(dir="cnvkit_prev_run_7_30_2018_6", model="V", minjoin=1.00, ntrial = 10, stringsAsFactors = FALSE)
 all_model_specs <- do.call(rbind, cnprep_run)
 
 #
@@ -47,7 +53,7 @@ retrieveSegtable <- function(sample, dir = "segClusteringResults/"){
 # @param("chrom_lines") - boolean declaring if plot vertical lines for chromosome boundaries should appear
 # @param("bin_coord") - boolean determine unit (TRUE if bin, FALSE if abs bp)
 # TODO: Have description of target arguments
-displayCNprepResults <- function(organoidId, select_chrom, start, end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, grid_lines = FALSE, chrom_lines = TRUE, bin_coord = TRUE, target_segments_function, target_segments_value, target_segments_col){
+displayCNprepResults <- function(organoidId, select_chrom, start, end, model_specs, cluster_value = "maxzmean", clustered_supplementary_value, overlay_cluster_means = FALSE, supplementary_values, cluster_cols, supplementary_cols, grid_lines = FALSE, chrom_lines = TRUE, bin_coord = TRUE, target_segments_function, target_segments_value, target_segments_col, yrange_trim = 0.0){
   #
   # Set coordinate unit
   #
@@ -93,6 +99,13 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
   }, select_chrom, start, end)
   
   #
+  # Ensure all segtables have same columns so that they can be rbinded together
+  #
+  all_colnames <- lapply(all_segtables, function(segtable) colnames(segtable))
+  common_colnames <- Reduce(intersect, all_colnames)
+  all_segtables <- lapply(all_segtables, function(segtable) segtable[,common_colnames])
+ 
+  #
   # Generate dataframe with all CNprep segtables
   #
   binded_segtables <- do.call(rbind, all_segtables)
@@ -123,6 +136,12 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
     selected_segtable <- binded_segtables[sapply(segtable_as_list, target_segments_function),]
     yvalues <- unlist(c(yvalues, selected_segtable[[target_segments_value]]))
   }
+ 
+  #
+  # Trim yvalues
+  #
+  yvalues <- sort(yvalues)
+  yvalues <- yvalues[seq(yrange_trim*length(yvalues) + 1, (1-yrange_trim)*length(yvalues))]  
   
   xrange <- range(binded_segtables[[start_col]],binded_segtables[[end_col]])
   yrange <- range(yvalues - ymargin, yvalues + ymargin)
@@ -140,7 +159,7 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
     # Set plot information
     #
     as.list(model_spec)
-    title <- paste0("dir=", model_spec$dir, " model=", model_spec$model, " minjoin=", model_spec$minjoin, " ntrial=", model_spec$ntrial)
+    title <- paste0("organoidId=", organoidId, " dir=", model_spec$dir, " model=", model_spec$model, " minjoin=", model_spec$minjoin, " ntrial=", model_spec$ntrial)
     plot(xrange, yrange, main = title, type="n", xlab = "", ylab = "")
     legend_values <- c()
     legend_col <- c()

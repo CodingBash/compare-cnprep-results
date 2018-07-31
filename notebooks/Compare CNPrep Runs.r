@@ -4,6 +4,7 @@
 #
 setwd("~/Documents/Git-Projects/Git-Research-Projects/compare-cnprep-results/") # Set working directory to where the scripts are located at
 source("compareCNprepResultsLibrary.R") # Import visualization library
+source("helperFunctions.R") # Import helper functions
 library(RColorBrewer) # Import brewer for coloring
 library(repr)
 
@@ -16,7 +17,7 @@ options(warn=-1)
 
 print(all_model_specs)
 
-selected_model_specs <- c(1,16)
+selected_model_specs <- c(1,16, 17)
 print(all_model_specs[selected_model_specs,])
 
 organoidId <- "hT1"
@@ -25,8 +26,9 @@ supplementary_values <- c("seg.median")
 grid_lines <- TRUE
 chrom_lines <- TRUE
 bin_coord <- FALSE
+yrange_trim <- 0.01
 
-displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], supplementary_values = c("seg.median"), supplementary_cols =  supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
+displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], supplementary_values = c("seg.median"), supplementary_cols =  supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord, yrange_trim = yrange_trim)
 
 cluster_value = "maxzmean"
 grid_lines <- TRUE
@@ -41,8 +43,9 @@ overlay_cluster_means = TRUE
 grid_lines <- TRUE
 chrom_lines <- TRUE
 bin_coord <- FALSE
+yrange_trim <- 0.01
 
-displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], cluster_value = cluster_value, clustered_supplementary_value = clustered_supplementary_value, overlay_cluster_means = overlay_cluster_means, cluster_cols = cluster_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
+displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], cluster_value = cluster_value, clustered_supplementary_value = clustered_supplementary_value, overlay_cluster_means = overlay_cluster_means, cluster_cols = cluster_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord, yrange_trim = yrange_trim)
 
 start = 1e9
 end = 2.5e9
@@ -53,8 +56,9 @@ overlay_cluster_means = TRUE
 grid_lines <- TRUE
 chrom_lines <- TRUE
 bin_coord <- FALSE
+yrange_trim <- 0.01
 
-displayCNprepResults(organoidId= organoidId, start = start, end = end, model_specs = all_model_specs[selected_model_specs, ], cluster_value = cluster_value, clustered_supplementary_value = clustered_supplementary_value, overlay_cluster_means = overlay_cluster_means, cluster_cols = cluster_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
+displayCNprepResults(organoidId= organoidId, start = start, end = end, model_specs = all_model_specs[selected_model_specs, ], cluster_value = cluster_value, clustered_supplementary_value = clustered_supplementary_value, overlay_cluster_means = overlay_cluster_means, cluster_cols = cluster_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord, yrange_trim = yrange_trim)
 
 select_chrom = 3
 
@@ -85,8 +89,6 @@ grid_lines <- TRUE
 chrom_lines <- TRUE
 bin_coord <- FALSE
 
-organoidId = "hT101"
-
 displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], target_segments_function = target_segments_function, target_segments_value = target_segments_value, target_segments_col = target_segments_col, supplementary_values = supplementary_values , supplementary_cols = supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
 
 target_segments_function = highlight_facets_events
@@ -99,3 +101,16 @@ chrom_lines <- TRUE
 bin_coord <- FALSE
 
 displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], target_segments_function = target_segments_function, target_segments_value = target_segments_value, target_segments_col = target_segments_col, supplementary_values = supplementary_values , supplementary_cols = supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
+
+cluster_value = "maxzmean"
+clustered_supplementary_value = "mediandev"
+overlay_cluster_means = TRUE
+grid_lines <- TRUE
+chrom_lines <- TRUE
+bin_coord <- FALSE
+yrange_trim <- 0.01
+
+samples <- load_samples(classes = c("T"), sampleList = "./resources/sampleList.csv")
+for(sample in samples){
+    displayCNprepResults(organoidId= sample, model_specs = all_model_specs[selected_model_specs, ], cluster_value = cluster_value, clustered_supplementary_value = clustered_supplementary_value, overlay_cluster_means = overlay_cluster_means, cluster_cols = cluster_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord, yrange_trim = yrange_trim)
+}

@@ -29,7 +29,7 @@ for(sample in loaded_samples){
 NA12878_X <- unlist(NA12878_X)
 hN31_Y <- unlist(hN31_Y)
   
-plot(NA12878_X, hN31_Y)
+plot(NA12878_X, hN31_Y, xlim = c(30, 100), ylim = c(30, 100))
 abline(lm(I(hN31_Y) ~ 0 + NA12878_X), col = "red")
 abline(1,1, col = "blue")
 dev.off()

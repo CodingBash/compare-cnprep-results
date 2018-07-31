@@ -14,7 +14,7 @@ options(warn=-1)
 
 print(all_model_specs)
 
-selected_model_specs <- c(1,16)
+selected_model_specs <- c(1,16,17)
 print(all_model_specs[selected_model_specs,])
 
 organoidId <- "hT1"
@@ -24,7 +24,7 @@ grid_lines <- TRUE
 chrom_lines <- TRUE
 bin_coord <- FALSE
 
-displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], supplementary_values = c("seg.median"), supplementary_cols =  supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord)
+displayCNprepResults(organoidId= organoidId, model_specs = all_model_specs[selected_model_specs, ], supplementary_values = c("seg.median"), supplementary_cols =  supplementary_cols, grid_lines = grid_lines, chrom_lines = chrom_lines, bin_coord = bin_coord, yrange_trim = 0.01)
 
 cluster_value = "maxzmean"
 grid_lines <- TRUE
