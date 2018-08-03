@@ -156,7 +156,7 @@ displayCNprepResults <- function(organoidId, select_chrom, start, end, model_spe
     segtable <- all_segtables[[segtable.i]]
     model_spec <- model_specs[segtable.i, ]
     #
-    # Set plot information
+    # Set pl=1ot information
     #
     as.list(model_spec)
     title <- paste0("organoidId=", organoidId, " dir=", model_spec$dir, " model=", model_spec$model, " minjoin=", model_spec$minjoin, " ntrial=", model_spec$ntrial)
